@@ -70,6 +70,10 @@ my %dispatch = (
         module => "Ircbuddy::Dynamic::Message",
         auth => [qw/ admin moderator contributor /],
     },
+    messages => {
+        module => "Ircbuddy::Dynamic::Message",
+        auth => [qw/ admin moderator contributor /],
+    },
     learn => {
         module => "Ircbuddy::Dynamic::Learn",
         auth => [qw/ admin moderator contributor /],
