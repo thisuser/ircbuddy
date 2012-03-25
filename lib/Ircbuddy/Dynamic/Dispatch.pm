@@ -15,6 +15,15 @@ my %dispatch = (
         module => "Ircbuddy::Dynamic::AuthLevel",
         auth => [qw/ admin /],
     },
+    broadcast => {
+        module => "Ircbuddy::Dynamic::Broadcast",
+    },
+    hex2bin => {
+        module => "Ircbuddy::Dynamic::Hex2Bin",
+    },
+    hex2dec => {
+        module => "Ircbuddy::Dynamic::Hex2Dec",
+    },
     test => {
         module => "Ircbuddy::Dynamic::Dummy",
         
@@ -47,7 +56,7 @@ my %dispatch = (
 
     logout => {
         module => "Ircbuddy::Dynamic::Logout",
-        auth => [qw/admin moderator contributor /],
+
     },
     
 
@@ -55,6 +64,11 @@ my %dispatch = (
     
     define => {
         module => "Ircbuddy::Dynamic::Define",
+    },
+    
+    message => { # later tell?
+        module => "Ircbuddy::Dynamic::Message",
+        auth => [qw/ admin moderator contributor /],
     },
     learn => {
         module => "Ircbuddy::Dynamic::Learn",
@@ -70,6 +84,13 @@ my %dispatch = (
     forget => {
         module => "Ircbuddy::Dynamic::Forget",
         auth => [qw/ admin moderator /],
+    },
+    network => {
+        module => "Ircbuddy::Dynamic::Network",
+        
+    },
+    repeat => {
+        module => "Ircbuddy::Dynamic::Quiz",
     },
     search => {
         module => "Ircbuddy::Dynamic::Search",

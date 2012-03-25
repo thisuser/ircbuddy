@@ -76,6 +76,25 @@ sub go {
         $bot->reply($mess,$question);
         
     }
+    elsif ($message =~ /^repeat$/) {
+        if ($mess->{channel} eq 'msg') {
+            if (exists $quiz->{$mess->{who}}{question}) {
+                $bot->reply($mess,$quiz->{$mess->{who}}{question});
+            }
+            else {
+                $bot->reply($mess,"no pending question");
+            }
+        }
+        else {
+            if (exists $quiz->{ircbuddy}{question}) {
+                $bot->reply($mess,$quiz->{ircbuddy}{question});
+            }
+            else {
+                $bot->reply($mess,"no pending question");
+            }
+        }
+    }
+
     
 }
 
