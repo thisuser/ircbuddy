@@ -55,12 +55,24 @@ sub said {
   if (exists $mess->{address}) {
 	my $message = $mess->{body};
 	
-	if (is_loaded("Ircbuddy::Dynamic::Dispatch")) {
-	eval { Ircbuddy::Dynamic::Dispatch->dispatch($self,$mess,$schema) };
-	  $self->reply($self,$mess,$@) if $@;
+	if ($message =~ /.*\?$/) {
+	  # ends in a ?, must be answering a question?
+	  # send to Quiz
+	  if (is_loaded("Ircbuddy::Dynamic::Quiz")) {
+		eval { Ircbuddy::Dynamic::Quiz->go($self,$mess,$schema) };
+		$self->reply($mess,$@) if $@;
+	  }
+	  
 	}
 	else {
-	  $self->reply($mess,"I don\'t know what to do.. my Dispatch module is not loaded :(");
+	
+	  if (is_loaded("Ircbuddy::Dynamic::Dispatch")) {
+		eval { Ircbuddy::Dynamic::Dispatch->dispatch($self,$mess,$schema) };
+		$self->reply($mess,$@) if $@;
+	  }
+	  else {
+		$self->reply($mess,"I don\'t know what to do.. my Dispatch module is not loaded :(");
+	  }
 	}
   }
 }

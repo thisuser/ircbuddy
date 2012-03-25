@@ -7,6 +7,18 @@ use Module::Loaded;
 
 my %dispatch = (
     
+    auth => {
+        module => "Ircbuddy::Dynamic::Auth",
+        where => "private",
+    },
+    authlevel => {
+        module => "Ircbuddy::Dynamic::AuthLevel",
+        auth => [qw/ admin /],
+    },
+    test => {
+        module => "Ircbuddy::Dynamic::Dummy",
+        
+    },
     load => {
         module => "Ircbuddy::Core::Load",
         auth => [qw/ admin /],
@@ -32,23 +44,13 @@ my %dispatch = (
         module => "Ircbuddy::Dynamic::Register",
         where => "private",
     },
-    auth => {
-        module => "Ircbuddy::Dynamic::Auth",
-        where => "private",
-    },
-    authlevel => {
-        module => "Ircbuddy::Dynamic::AuthLevel",
-        auth => [qw/ admin /],
-    },
+
     logout => {
         module => "Ircbuddy::Dynamic::Logout",
         auth => [qw/admin moderator contributor /],
     },
     
-    stats => {
-        module => "Ircbuddy::Dynamic::Stats",
-        auth => [qw/ admin moderator contributor /],
-    },
+
     
     
     define => {
@@ -58,6 +60,9 @@ my %dispatch = (
         module => "Ircbuddy::Dynamic::Learn",
         auth => [qw/ admin moderator contributor /],
     },
+    listdefines => {
+        module => "Ircbuddy::Dynamic::ListDefines",
+    },
     relearn => {
         module => "Ircbuddy::Dynamic::Relearn",
         auth => [qw/ admin moderator /],
@@ -65,6 +70,14 @@ my %dispatch = (
     forget => {
         module => "Ircbuddy::Dynamic::Forget",
         auth => [qw/ admin moderator /],
+    },
+    search => {
+        module => "Ircbuddy::Dynamic::Search",
+    
+    },
+    stats => {
+        module => "Ircbuddy::Dynamic::Stats",
+        auth => [qw/ admin moderator contributor /],
     },
     quiz => {
         module => "Ircbuddy::Dynamic::Quiz",
