@@ -7,7 +7,11 @@ use FindBin::Real;
 
 use lib FindBin::Real::Bin() .'/lib';
 use Database::Main;
+
+#
+# zOMG I left a password!
 my $schema = Database::Main->connect('dbi:mysql:cisco:localhost', 'cisco', 'ciscostuffs') or die $!;
+
 use Module::Find;
 
 use Class::Inspector;
