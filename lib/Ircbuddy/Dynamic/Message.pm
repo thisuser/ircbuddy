@@ -67,7 +67,7 @@ sub go {
                 });
                 if ($search->count) {
                         $search->delete;
-                        $bot->reply($mess,"deletedtest");
+                        $bot->reply($mess,"deleted");
                 }
                 else {
                         $bot->reply($mess,"unknown message");
