@@ -73,7 +73,21 @@ sub go {
                         $bot->reply($mess,"unknown message");
                 }
         }
-
+		elsif ($message =~ /^message\s+del\s+all/) {
+			my $who = $mess->{who};
+            my $search = $schema->resultset('LaterTell')->search({
+                    who => $who,
+            });
+            if ($search->count) {
+                    while (my $row = $search->next) {
+							$search->delete;
+                    }
+					$bot->reply($mess,"All messages deleted");
+            }
+            else {
+                    $bot->reply($mess,"no messages");
+            }
+		}
 
 
 

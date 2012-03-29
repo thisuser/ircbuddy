@@ -36,9 +36,9 @@ use base qw/Bot::BasicBot/;
     port   => "6667",
     channels => ["#ircbuddy"],
 
-    nick      => "ircbuddy2",
-    alt_nicks => ["ircbuddy_", "ircbuddy__"],
-    username  => "ircbuddy",
+    nick      => "ircbudtest",
+    alt_nicks => ["ircbudtest1", "ircbudtest_"],
+    username  => "ircbudtest",
     name      => "ircbuddy",
 
 #    ignore_list => [qw(Chanserv)];
