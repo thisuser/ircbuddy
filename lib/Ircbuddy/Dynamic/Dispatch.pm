@@ -18,12 +18,20 @@ my %dispatch = (
     broadcast => {
         module => "Ircbuddy::Dynamic::Broadcast",
     },
+    calc => {
+        module => "Ircbuddy::Dynamic::Calc",
+    },
+
     hex2bin => {
         module => "Ircbuddy::Dynamic::Hex2Bin",
     },
     hex2dec => {
         module => "Ircbuddy::Dynamic::Hex2Dec",
     },
+    how => {
+        module => "Ircbuddy::Dynamic::How",
+    },
+
     test => {
         module => "Ircbuddy::Dynamic::Dummy",
         
@@ -58,10 +66,6 @@ my %dispatch = (
         module => "Ircbuddy::Dynamic::Logout",
 
     },
-    
-
-    
-    
     define => {
         module => "Ircbuddy::Dynamic::Define",
     },
@@ -107,7 +111,16 @@ my %dispatch = (
     quiz => {
         module => "Ircbuddy::Dynamic::Quiz",
     },
+    you => {
+        module => "Ircbuddy::Dynamic::You",
+        auth => [qw/ admin moderator contributor /],
+   },
+
 );
+
+sub get_hash {
+    return %dispatch;
+}
 
 
 sub dispatch {

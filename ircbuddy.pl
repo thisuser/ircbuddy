@@ -1,32 +1,24 @@
 package Ircbuddy;
 
-use File::Copy;
+
 use Module::Loaded;
+use Module::Find;
 use FindBin::Real;
-
-
 use lib FindBin::Real::Bin() .'/lib';
 use Database::Main;
 
-#
-# zOMG I left a password!
+
+
+# zOMG I left a password!.. and I don't care!
 my $schema = Database::Main->connect('dbi:mysql:cisco:localhost', 'cisco', 'ciscostuffs') or die $!;
 
-use Module::Find;
-
-use Class::Inspector;
-
-
-
+#Load all our modules
 my @core  =  useall Ircbuddy::Core;
 my @active = useall Ircbuddy::Dynamic;
-
 print "$_\n" for @core;
 print "$_\n" for @active;
 
-my $core_commands = Class::Inspector->methods('Ircbuddy::Core::Core','private');
-s/^_// for @{ $core_commands };
-    
+
 
 use base qw/Bot::BasicBot/;
 
@@ -52,27 +44,37 @@ sub said {
   print STDERR $mess->{who} ." : ".$mess->{body}."\n";
   my $nick = $self->nick;
   
+  
+  # if the bot is addressed
   if (exists $mess->{address}) {
+	
 	my $message = $mess->{body};
 	
-	if ($message =~ /.*\?$/) {
-	  # ends in a ?, must be answering a question?
-	  # send to Quiz
-	  if (is_loaded("Ircbuddy::Dynamic::Quiz")) {
-		eval { Ircbuddy::Dynamic::Quiz->go($self,$mess,$schema) };
-		$self->reply($mess,$@) if $@;
+	
+	# Check to see if what is sent to ircbuddy is
+	# an actual command. If it's not, send the message
+	# to the Quiz module because it may be a response
+	# to a question.
+	if (is_loaded("Ircbuddy::Dynamic::Dispatch")) {
+	  my ($check) = ($message =~ /(\S+)/);
+	  my %hash = Ircbuddy::Dynamic::Dispatch->get_hash;
+	  if (exists $hash{$check}) {
+		
+		# It is a command, send it to Dispatch
+		eval { Ircbuddy::Dynamic::Dispatch->dispatch($self,$mess,$schema) };
+		$self->reply($mess,$@) if $@;  # Exception, send error message to channel
 	  }
-	  
+	  # not a command, if it ends in a ?, send it to quiz
+  	  elsif ($message =~ /.*\?$/) {
+		if (is_loaded("Ircbuddy::Dynamic::Quiz")) {
+		  eval { Ircbuddy::Dynamic::Quiz->go($self,$mess,$schema) };
+		  $self->reply($mess,$@) if $@;  # Exception, send error message to channel
+		}
+	  }
 	}
 	else {
+	  $self->reply($mess,"I don\'t know what to do.. my Dispatch module is not loaded :(");
 	
-	  if (is_loaded("Ircbuddy::Dynamic::Dispatch")) {
-		eval { Ircbuddy::Dynamic::Dispatch->dispatch($self,$mess,$schema) };
-		$self->reply($mess,$@) if $@;
-	  }
-	  else {
-		$self->reply($mess,"I don\'t know what to do.. my Dispatch module is not loaded :(");
-	  }
 	}
   }
 }

@@ -35,6 +35,9 @@ sub go {
                 $bot->reply($mess,"correct!");
                 delete $quiz->{ircbuddy};
             }
+            else {
+                $bot->reply($mess,"nope :(");
+            }
         }
        
     }
