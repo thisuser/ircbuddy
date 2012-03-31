@@ -134,69 +134,89 @@ sub dispatch {
             
             
             if (exists $dispatch{$key}{auth}) {
-                
+                # If we're here, then the module requires the
+                # user to have a certain role to use it.
                 
                 
                 my $who = $mess->{who};
                 my $raw = $mess->{raw_nick};
                 
                 
-                # Check if user exists
+                # Check if user exists in the database
                 my $search = $schema->resultset('Users')->search({ username => $who });
                 
                 if ($search->count) {
                     my $user = $search->first;
                   
+                  
+                    # If raw_nick in the database matches the user's raw (ident@host)
+                    # then the user is authenticated
                     if ($user->raw_nick eq $raw) {
+                      
+                      
+                        # Get the user role, and see if it matches
+                        # the module's requirement
                         my $role = $user->role;
-                        
-                        
                         if (grep($_ eq $role,  @{ $dispatch{$key}{auth} })) {
+                            
+                            # yay! we got this far, the user: exists, is authenticated, and
+                            # has the correct role
                         
   
                             if (exists $dispatch{$key}{'where'}) {
+                                # If were are here, the module requires the user request to
+                                # be chatted in a specific way, like either channel, or private message
                                 
                                 if (
                                     ($mess->{channel} eq 'msg' && $dispatch{$key}{where} eq 'private') ||
                                     ($mess->{channel} ne 'msg' && $dispatch{$key}{where} eq 'channel')) {
      
                                     eval{ $module->go($bot,$mess,$schema) };
-                                    $bot->reply($mess,$@) if $@;
+                                    $bot->reply($mess,$@) if $@; # Exception, reply with error
                                 }
                                 else {
                                     $bot->reply($mess,"That function is limited to ".$dispatch{$key}{where}. " message");
                                 }
                             }
                             else {
+                                # 'where' is not specified by the module,
+                                # so just do it
 
                                 eval{ $module->go($bot,$mess,$schema) };
-                                $bot->reply($mess,$@) if $@;
+                                $bot->reply($mess,$@) if $@; # Exception, reply with error
                             }
                         }
                         else {
-                            
+                            # User exists, is authenticated, but does not
+                            # have the correct role
                             $bot->reply($mess,"Insufficient privileges");
                         }
                     }
                     else {
+                        # The user exists, but is not authenticated,
+                        # raw_nick does not match user<ident@hostname>
                         $bot->reply($mess,"That request requires authorization");
                         
                     }
                 }
                 else {
+                    # user is not in database at all
                     $bot->reply($mess,"That request requires registration and privileges");
                     
                 }
             }
             else {
-                # Anyone can use this module! fun fun!
+                # The module is wide open. Anyone can use this module! fun fun!
                 if (exists $dispatch{$key}{'where'}) {
+                    
+                    #
+                   
                     if (
                         ($mess->{channel} eq 'msg' && $dispatch{$key}{where} eq 'private') ||
                         ($mess->{channel} ne 'msg' && $dispatch{$key}{where} eq 'channel')) {
      
                         eval{ $module->go($bot,$mess,$schema) };
-                        $bot->reply($mess,$@) if $@;
+                        $bot->reply($mess,$@) if $@; # Exception, reply with error
                     }
                     else {
                         $bot->reply($mess,"That function is limited to ".$dispatch{$key}{where}. " message");
@@ -204,7 +224,7 @@ sub dispatch {
                 }
                 else {
                     eval{ $module->go($bot,$mess,$schema) };
-                    $bot->reply($mess,$@) if $@;
+                    $bot->reply($mess,$@) if $@; # Exception, reply with error
                 }
                
             }
@@ -214,6 +234,7 @@ sub dispatch {
         }
     }
     else {
+        # Unknown command
         $bot->reply($mess,"?");
     }
     
