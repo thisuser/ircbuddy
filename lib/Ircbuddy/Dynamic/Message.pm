@@ -79,17 +79,13 @@ sub go {
                     who => $who,
             });
             if ($search->count) {
-                    while (my $row = $search->next) {
-							$search->delete;
-                    }
-					$bot->reply($mess,"All messages deleted");
+				$search->delete;
+    			$bot->reply($mess,"All messages deleted");
             }
             else {
-                    $bot->reply($mess,"no messages");
+                    $bot->reply($mess,"no messages to delete");
             }
 		}
-
-
 
 }
 

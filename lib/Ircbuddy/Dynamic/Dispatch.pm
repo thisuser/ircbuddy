@@ -234,7 +234,7 @@ sub dispatch {
         }
     }
     else {
-        # Unknown command
+        # Unknown command.. this probably will never get reached
         $bot->reply($mess,"?");
     }
     

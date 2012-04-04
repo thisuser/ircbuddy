@@ -4,36 +4,44 @@ use strict;
 use warnings;
 
 use List::MoreUtils qw(pairwise);
-use Ircbuddy::Core::Tools qw/ _randomip _dec2bin _bin2dec /;
+
+
+use Ircbuddy::Dynamic::Quiz::Subnetting;
+use Ircbuddy::Dynamic::Quiz::Bin2Hex;
+use Ircbuddy::Dynamic::Quiz::Definitions;
+
+
 
 
 my $quiz;
+my $question;
+my $answer;
 
 
 sub go {
     
     my ($self,$bot,$mess,$schema) = @_;
     my $message = $mess->{body};
+    my $who;
+    
+    if ($mess->{channel} eq 'msg') {
+        $who = $mess->{who};
+    }
+    else {
+        $who = 'ircbuddy'; # Channel
+    }
+    
+    # Ends in a question mark,
+    # so is it an attempt to answer a question?
     if ($message =~ /.*\?$/) {
         my ($try) = ($message =~ /(.*)\?$/);
         
-        if ($mess->{channel} eq 'msg') {
-        
-            my $answer = $quiz->{$mess->{who} }{answer};
+        if (exists $quiz->{$who}{answer}) {   
+            my $answer = $quiz->{$who}{answer};
             if ($try =~ /^$answer$/) {
                 $bot->reply($mess,"correct!");
-                delete $quiz->{$mess->{who} };
+                delete $quiz->{$who};
                         
-            }
-            else {
-                $bot->reply($mess,"nope :(");
-            }
-        }
-        else {
-            my $answer = $quiz->{ircbuddy}{answer};
-            if ($try =~ /^$answer$/) {
-                $bot->reply($mess,"correct!");
-                delete $quiz->{ircbuddy};
             }
             else {
                 $bot->reply($mess,"nope :(");
@@ -41,62 +49,51 @@ sub go {
         }
        
     }
-    elsif ($message =~ /^quiz\s+(me|us)\s+on\s+subnet(ting)?/i) {
-        
-        my $ip = &_randomip;
-        my $prefix = (int rand 25) + 8;
-
-        # mask in binary
-        my $ones = $prefix;
-        my $zeros = 32 - $prefix;
-        my $binary_mask = 1 x $ones . 0 x $zeros;
-        my @mask = split('',$binary_mask);
-
-        # IP in binary
-        my @octets = map{_dec2bin($_) } split('\.',$ip);
-        my $join = join('',@octets);
-        my @ipaddr = split('',$join);
-
-
-        my @network = pairwise { $a & $b } @mask,@ipaddr;
-        my $network_binary = join('',@network);
-        my @network_octets = ($network_binary =~ /(\d{8})/g);
-        my @decimals = map{ _bin2dec($_) } @network_octets;
-        
-        my $question = "Given $ip/$prefix, network address is?";
-        my $answer = join('.',@decimals);
-        
-        if ($mess->{channel} eq 'msg') {   #private message
-            
-            $quiz->{ $mess->{who} }{question} = $question;
-            $quiz->{ $mess->{who} }{answer}   = $answer;
-                
-        }
-        else {
-            $quiz->{ircbuddy}{question} = $question;
-            $quiz->{ircbuddy}{answer}   = $answer;
-        }
-        $bot->reply($mess,$question);
-        
-    }
     elsif ($message =~ /^repeat$/) {
-        if ($mess->{channel} eq 'msg') {
-            if (exists $quiz->{$mess->{who}}{question}) {
-                $bot->reply($mess,$quiz->{$mess->{who}}{question});
-            }
-            else {
-                $bot->reply($mess,"no pending question");
-            }
+        if (exists $quiz->{$who}{question}) {
+            $bot->reply($mess,$quiz->{$who}{question});
         }
         else {
-            if (exists $quiz->{ircbuddy}{question}) {
-                $bot->reply($mess,$quiz->{ircbuddy}{question});
-            }
-            else {
-                $bot->reply($mess,"no pending question");
-            }
+            $bot->reply($mess,"no pending question");
         }
+
     }
+    elsif ($message =~ /^quiz\s+(me|us)\s+on\s+def(initions)?/i) {
+        
+        
+        ($question,$answer) = Ircbuddy::Dynamic::Quiz::Definitions->quiz($schema);
+        $quiz->{$who}{question} = $question;
+        $quiz->{$who}{answer}   = $answer;
+         $bot->reply($mess,$question); 
+        
+
+    }
+    elsif ($message =~ /^quiz\s+(me|us)\s+on\s+subnet(ting)?/i) {
+       
+       
+       ($question,$answer) = Ircbuddy::Dynamic::Quiz::Subnetting->quiz;
+        $quiz->{$who}{question} = $question;
+        $quiz->{$who}{answer}   = $answer;
+        $bot->reply($mess,$question);    
+        
+    }
+    elsif ($message =~ /^quiz\s+(me|us)\s+on\s+(bin2hex|binary\s+to\s+hex)$/i) {
+       
+       
+       ($question,$answer) = Ircbuddy::Dynamic::Quiz::Bin2Hex->quiz;
+        $quiz->{$who}{question} = $question;
+        $quiz->{$who}{answer}   = $answer;
+        $bot->reply($mess,$question);    
+        
+    }
+    
+    else {
+        $bot->reply($mess,"Unknown quiz command");
+    }
+
+        
+
+
 
     
 }

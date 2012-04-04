@@ -28,7 +28,7 @@ use base qw/Bot::BasicBot/;
     port   => "6667",
     channels => ["#ircbuddy"],
 
-    nick      => "ircbudtest",
+    nick      => "ircbudtest123",
     alt_nicks => ["ircbudtest1", "ircbudtest_"],
     username  => "ircbudtest",
     name      => "ircbuddy",
