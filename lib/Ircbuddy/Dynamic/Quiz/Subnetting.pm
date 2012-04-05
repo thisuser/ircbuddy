@@ -2,7 +2,7 @@ package Ircbuddy::Dynamic::Quiz::Subnetting;
 use strict;
 use warnings;
 
-
+use List::MoreUtils qw(pairwise);
 use Ircbuddy::Core::Tools qw/ _randomip _dec2bin _bin2dec /;
 
 
