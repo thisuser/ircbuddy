@@ -104,6 +104,9 @@ my %dispatch = (
         module => "Ircbuddy::Dynamic::Search",
     
     },
+    source => {
+        module => "Ircbuddy::Dynamic::Source",
+    },
     stats => {
         module => "Ircbuddy::Dynamic::Stats",
         auth => [qw/ admin moderator contributor /],

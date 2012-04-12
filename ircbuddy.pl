@@ -8,6 +8,8 @@ use lib FindBin::Real::Bin() .'/lib';
 use Database::Main;
 
 
+my $ai;
+
 
 # zOMG I left a password!.. and I don't care!
 my $schema = Database::Main->connect('dbi:mysql:cisco:localhost', 'cisco', 'ciscostuffs') or die $!;
@@ -28,7 +30,7 @@ use base qw/Bot::BasicBot/;
     port   => "6667",
     channels => ["#ircbuddy"],
 
-    nick      => "ircbudtest123",
+    nick      => "ircbuddy" . ( int( rand( 999)) + 123),
     alt_nicks => ["ircbudtest1", "ircbudtest_"],
     username  => "ircbudtest",
     name      => "ircbuddy",
@@ -58,6 +60,7 @@ sub said {
 	if (is_loaded("Ircbuddy::Dynamic::Dispatch")) {
 	  my ($check) = ($message =~ /(\S+)/);
 	  my %hash = Ircbuddy::Dynamic::Dispatch->get_hash;
+	  $check = lc $check;
 	  if (exists $hash{$check}) {
 		
 		# It is a command, send it to Dispatch
@@ -71,15 +74,60 @@ sub said {
 		  $self->reply($mess,$@) if $@;  # Exception, send error message to channel
 		}
 	  }
+	  else {
+		  # do nothing
+		  return;
+		  
+	  }
 	}
 	else {
 	  $self->reply($mess,"I don\'t know what to do.. my Dispatch module is not loaded :(");
 	
 	}
   }
+  else {
+	# AI stuff!  Ircbuddy wants in on the conversation!
+	  if (is_loaded(Ircbuddy::Dynamic::DispatchAI)) {
+		eval { Ircbuddy::Dynamic::DispatchAI->dispatch($self,$mess,$schema,$ai)};
+		$self->reply($mess,$@) if $@;  # Exception, send error message to channel
+	  }
+  }
 }
 
+sub chanjoin {
+  
+  my ($self,$mess) = @_;
+  my $who = $mess->{who};
+  
+  
+  return if $self->nick eq $who;
+  
+  if (!exists $ai->{"chanjoin"}{$who}) {
+	my $time = time;
+	
+	  # it's been a while since ircbuddy saw this person
+		my @random = (
+            "hi " . $who,
+			"hi",
+            "hey " . $who,
+            
+        );
+        my $rand = int rand @random;
+		$ai->{"chanjoin"}{ $who } = $time;
+		$ai->{said_hi}{ $who } = time;
+		delete $mess->{"who"};
+		$bot->say(channel=> $mess->{channel}, body => $random[$rand]);
+		
 
+        
+	
+	
+  }
+  else {
+	return;
+  }
+  
+}
 sub help {
 	my $self = shift;
 	my $mess = shift;
@@ -91,6 +139,28 @@ sub help {
 	else {
 		$self->reply($mess,"Help module is not loaded");
 	}
+}
+sub tick {
+    my $self = shift;
+	my $time = time;
+	
+	if (exists $ai->{said_hi}) {
+
+	  for my $who (keys %{ $ai->{said_hi}}) {
+		
+		delete $ai->{said_hi}{$who} if ( ($time - $ai->{said_hi}{$who}) > 600); # 10 minutes
+	  }
+	}
+	if (exists $ai->{chanjoin}) {
+	  for my $who (keys %{ $ai->{chanjoin}}) {
+		
+		delete $ai->{chanjoin}{$who} if ( ($time - $ai->{chanjoin}{$who}) > 3600); #  an hour
+	  }
+		
+	}
+
+
+    return 5;
 }
 	
 $bot->run();
