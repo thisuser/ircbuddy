@@ -86,6 +86,19 @@ sub go {
         $bot->reply($mess,$question);    
         
     }
+    elsif ($message =~ /^quiz\s+(me|us)\s+on\s+multiple\s+choice$/i) {
+       
+       
+       ($question,$answer) = Ircbuddy::Dynamic::Quiz::MultipleChoice->quiz($schema);
+        $quiz->{$who}{question} = $question;
+        $quiz->{$who}{answer}   = $answer;
+        if ($mess->{channel} ne 'msg') {
+            delete $mess->{who};
+        }
+        
+        $bot->reply($mess,$question);    
+        
+    }
     
     else {
         $bot->reply($mess,"Unknown quiz command");

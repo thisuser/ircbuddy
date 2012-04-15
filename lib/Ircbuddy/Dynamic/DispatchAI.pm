@@ -13,7 +13,7 @@ sub dispatch {
     
     my $nick = $bot->nick;
     
-    if ($message =~ /^hi|hey|sup$/i) {
+    if ($message =~ /^(hi|hey|sup)$/i) {
         
         my @random = (
             "hi " . $mess->{who},
@@ -31,7 +31,7 @@ sub dispatch {
 
         }
     }
-    elsif ($message =~ /^hi|hey|sup\s+$nick$/) {
+    elsif ($message =~ /^(hi|hey|sup)\s+$nick$/) {
         my @random = (
             "hi " . $mess->{who},
             "sup?",
