@@ -28,7 +28,7 @@ sub go {
             $bot->reply($mess,qq/Your username is already registered in my database. Talk to infrared if you feel that is invalid./);
         }
         else {
-            my $insert = $schema->resultset('Users')->create({ username => lc $mess->{who}, password => $encrypted });
+            my $insert = $schema->resultset('Users')->create({ username => lc $mess->{who}, password => $encrypted, raw_nick => $mess->{raw_nick} });
             if ($insert->id) {
                 my $whoadmin = $schema->resultset('Users')->search({ role => 'admin' });
                 my @admins;
