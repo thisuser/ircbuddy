@@ -1,0 +1,8 @@
+modules to add:
+1) google <terms>
+2*) time ( each user should be able to have the option to set a timezone for their account so that when they are auth'd and use the time command it uses their preset timezone to tell them the time )
+3) spelling Net::Google::spelling
+4) funfacts module (post in channel a random funfact every couple of hours) or (be called on at random by a user)
+5) file-server-> offer temp ftp access to files for users in channel.. user must be logged into channel at same time 
+6) update help with "how can I" feature and remove the 'question' listing
+7) update register to also auth once registered
