@@ -31,6 +31,9 @@ my %dispatch = (
     how => {
         module => "Ircbuddy::Dynamic::How",
     },
+    i => {   # ircbuddy: i give up   (to get the answer)
+        module => "Ircbuddy::Dynamic::Quiz",
+    },
 
     test => {
         module => "Ircbuddy::Dynamic::Dummy",

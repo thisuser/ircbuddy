@@ -38,7 +38,7 @@ sub go {
         
         if (exists $quiz->{$who}{answer}) {   
             my $answer = $quiz->{$who}{answer};
-            if ($try =~ /^$answer$/) {
+            if ($try =~ /^$answer$/i) {
                 $bot->reply($mess,"correct!");
                 delete $quiz->{$who};
                         
@@ -98,6 +98,24 @@ sub go {
         
         $bot->reply($mess,$question);    
         
+    }
+    elsif ($message =~ /^i\s+give\s+up$/i) {
+        
+        if (exists $quiz->{$who}) {
+            
+            $bot->reply($mess,"answer: ". $quiz->{$who}{answer});
+            delete $quiz->{$who};
+        }
+        else {
+            $bot->reply($mess,"No pending question");
+        }
+        
+        
+    }
+    elsif ($message =~ /^quiz\s+new\s+(ccna|ccent):.*:\s+?\S+/i) {
+        
+        my ($level,$question,$answer) =~ /^quiz\s+new\s+(ccna|ccent)\s+?:(.*)\s+?:\s+?(.*)/i;
+        $bot->reply($mess,"level: $level, question: $question, answer: $answer");
     }
     
     else {
